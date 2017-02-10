@@ -1,0 +1,346 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Introduction to Vagrant</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/sky.css">
+		<link rel="shortcut icon" href="/images/yin_yang_ico.png">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+        <section data-background="images/vagrant_logo-background.png" data-background-transition="fade" data-transition="fade">
+					<h2>Vagrant</h2>
+					<h3>Development Environments Made Easy</h3>
+          <img src="images/vagrant_logo-early.png" style="border:0px solid black; box-shadow: none">
+					<aside class="notes">
+						<p>Intro</p>
+						<p>Questions, ask as they occur. Just blurt 'em out!</p>
+						<p>Essentially, Vagrant is an automation wrapper for virtualization software.<p>
+					</aside>
+				</section>
+
+        <section data-background="images/mitchellh.jpg" data-background-transition="fade" data-transition="zoom-in slide-out">
+					<h2 style="color: white;">Mitchell Hashimoto</h2>
+					<p style="color: white;">
+						DevOps Tools Mad Scientist
+					</p>
+					<ul style="color: white;">
+						<li>Vagrant</li>
+						<li>Packer</li>
+					</ul>
+					<aside class="notes">
+						<p>Mitchell wrote Vagrant in 2010 while still in college. It is implemented in Ruby.</p>
+            <p>College story about registration.</p>
+					</aside>
+				</section>
+
+        <section data-background="images/vagrant_logo-background.png" data-background-transition="slide">
+					<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="zoom-in fade-out">
+						<h1>For Developers</h1>
+						<p>Vagrant isolates dependencies and their configurations within a single,
+						disposable, and consistent environment.</p>
+						<aside class="notes">
+							<p>Vagrant automates a tedious process you could do manually yourself.</p>
+						</aside>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="fade">
+						<script type="text/template">
+							## The Tao of Vagrant
+
+							In a world with Vagrant, developers can clone any repository from version
+							control, run `vagrant up`, and have a fully running development
+							environment without any human interaction. Developers continue to work on
+							their own machine, in the comfort of their own editors, browsers, and other
+							tools. The existence of Vagrant is transparent and unimportant in the mind
+							of the developer. Vagrant is the workhorse that creates consistent and
+							stable development environments.
+						</script>
+					</section>
+				</section>
+
+				<section data-background-transition="slide" data-transition="linear">
+					<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<h2>Infrastructure as Code</h2>
+						<p>The development environment is modeled in code so we can use the same
+						tools and principles as we would for software development.</p>
+						<aside class="notes">
+							<p>Combined with provisioners, Packer, and other tools, the entire application
+							infrastructure with all dependencies can be specified as part of the
+							application code.<p>
+						</aside>
+					</section>
+
+					<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<h2>Vagrantfile</h2>
+						<img src="images/example_project.png">
+						<aside class="notes">
+							<p>See the Vagrantfile? It's right there in the repo along with the application code.</p>
+						</aside>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="slide-in zoom-out">
+						<script type="text/template">
+							## Example Vagrantfile
+
+							This is a Vagrantfile used in this demo.
+```
+Vagrant.configure("2") do |config|
+  config.vm.provider :virtualbox do |vb, override|
+    override.vm.box = "intro-to-vagrant"
+    override.vm.box_url = "#{ENV['VAGRANT_BOX_REPOSITORY_URL']}/ubuntu-dev-java.box"
+    override.ssh.username = "ubuntu"
+    override.vm.synced_folder "#{ENV['HOME']}/.ssh", "/ssh"
+    override.vm.network "forwarded_port", guest: 8000, host: 8080
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "ansible/playbook.yml"
+  end
+end
+```
+							Note: This is the Vagrantfile I am using for the demo. It forwards
+							a port, mounts some shared folders, and provisions with Ansible.
+						</script>
+					</section>
+				</section>
+
+				<section data-background-transition="slide" data-transition="zoom-in slide-out">
+					<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="zoom-in slide-out">
+						<h2>Vagrant</h2>
+						<h3>Feature Overview</h3>
+						<p>Let's take a quick look at some Vagrant features.</p>
+						<aside class="notes">
+							<p>Vagrant has many more features. These are just the most common.</p>
+							<p>Vagrant supports multi-machine environments.</p>
+						</aside>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## The Vagrant Box
+
+							The Vagrant Box can be local or remote.
+
+```
+config.vm.box = "lucid32"
+config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
+config.vm.box_url = "file:///srv/boxes/lucid32.box"
+```
+
+							Note: box_url can be local or remote. Combined with provisioners Vagrant can
+							grab any remote box and customize it to your needs.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## Forwarded Ports
+
+							Vagrant will automatically forward ports on your box to your host.
+
+```
+override.vm.network "forwarded_port", guest: 5432, host: 5432
+override.vm.network "forwarded_port", guest: 8000, host: 8080
+override.vm.network "forwarded_port", guest: 9000, host: 9000
+```
+							Note:
+							- Ports are forwarded so the guest ports are wired up on the host.
+							- Host ports must be available in order to be forwarded.
+							- Guest and host ports may be different.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## Synced Folders
+
+							Synced folders for mounting host directories on your Vagrant box.
+
+```
+override.vm.synced_folder "#{ENV['HOME']}/.ssh", "/ssh"
+override.vm.synced_folder "#{ENV['HOME']}/.ivy2", "/home/ubuntu/.ivy2"
+override.vm.synced_folder "#{ENV['HOME']}/.m2", "/home/ubuntu/.m2"
+```
+
+							Note:
+							- Access your source code and other host files on your Vagrant VM.
+							- Write code on the host.
+							- No long package downloads on every Vagrant setup.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## Provisioning
+
+							Provisioners in Vagrant allow you to automatically install software, alter
+							configurations, and much more on the machine as part of the `vagrant up`
+							process.
+
+							Note:
+							- Provisioners can customize your Vagrant VM after vagrant up.
+							- These include Ansible, Salt Stack, Chef, Puppet, and shell scripts.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## Provisioning
+
+							Shell example
+
+```
+config.vm.provision "shell", path: "script.sh"
+```
+
+							Note:
+							- You can write a shell script to install software, create users, move files, etc...
+							- The shell provisioner may also be inline.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## Provisioning
+
+							Salt Stack example
+
+```
+config.vm.provision :salt do |salt|
+	salt.minion_config = "salt/minion"
+	salt.run_highstate = true
+end
+```
+
+							Note:
+							- Salt is implemented in Python and is capable of provisioning your entire system. Located right here in Utah. Originally located in Murray.
+							- Originally developed by Tom Hatch. He insists the name Salt Stack has nothing to do with Salt lake City.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="linear">
+						<script type="text/template">
+							## Provisioning
+
+							Ansible example
+
+```
+config.vm.provision "ansible" do |ansible|
+  ansible.playbook = "ansible/intro-to-vagrant.yml"
+end
+```
+
+							Note:
+							- Ansible is implemented in Python and is capable of provisioning your entire system.
+							- Ansible is Python3 compatible but not all Ansible modules are Python3 compatible. Developer beware.
+						</script>
+					</section>
+				</section>
+
+				<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="zoom-in slide-out">
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="zoom-in slide-out">
+						<script type="text/template">
+							## Provider Support
+
+							* Virtualbox
+							* VMware Fusion
+							* VMware Workstation
+							* Hyper-V
+							* Docker
+							* AWS
+
+							Note: Vagrant works with several virtualization environments.
+						</script>
+					</section>
+
+					<section data-markdown data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="slide-in fade-out">
+						<script type="text/template">
+							And now the answer to the question you've been dying to ask...
+						</script>
+					</section>
+
+					<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="fade">
+						<h2>Vagrant Supports Windows</h2>
+						<img src="images/windows_logo.png" width="400" style="border:0px solid black; box-shadow: none">
+
+						<aside class="notes">
+              <p>Vagrant runs on Windows and works with Windows Vagrant boxes.</p>
+              <p>Mitchell Hashomoto thought early Windows support was critical.</p>
+						</aside>
+					</section>
+				</section>
+
+				<section id="fragments" data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="zoom-in slide-out">
+					<h2>Vagrant Command-line Workflow</h2>
+					<ol>
+						<li class="fragment grow"><code>$ vagrant up</code></li>
+						<li class="fragment grow"><code>$ vagrant ssh</code></li>
+						<li class="fragment grow"><code>$ vagrant halt</code></li>
+						<li class="fragment grow"><code>$ vagrant destroy</code></li>
+						<li class="fragment grow"><code>$ vagrant box list</code></li>
+						<li class="fragment grow"><code>$ vagrant box remove ubuntu-dev</code></li>
+					</ol>
+
+					<aside class="notes">
+						<p>Commonly used Vagrant commands. Demo destroy</p>
+					</aside>
+				</section>
+
+				<section data-background="images/vagrant_logo-background.png" data-background-transition="slide" data-transition="fade">
+					<h2>Vagrant Demo</h2>
+
+					<p>For further study:</p>
+					<ul>
+						<li>http://www.vagrantup.com</li>
+						<li>http://docs.vagrantup.com</li>
+						<li>http://www.vagrantcloud.com</li>
+						<li>Vagrant: Up and Running</li>
+						<li>http://about.me/mitchellh</li>
+					</ul>
+
+					<aside class="notes">
+						<p>Switch to terminal. Demo with vagrant up, start reveal, hit webpage.</p>
+						<p>Do vagrant halt. Show vagrant ssh, etc... Then do vagrant destroy, vagrant box remove.</p>
+					</aside>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+        transition: 'zoom',
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>

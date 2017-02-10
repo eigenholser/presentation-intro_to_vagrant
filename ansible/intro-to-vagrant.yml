@@ -1,0 +1,33 @@
+---
+- name: Vagrant box provision
+
+  hosts: all
+
+  tasks:
+  - name: Update repositories
+    apt: update_cache=yes
+    become: true
+
+  - name: Install NodeJS
+    apt: name=nodejs state=latest
+    become: true
+
+  - name: Hack for Ubuntu - Create NodeJS Symbolic Link
+    file:
+      src: /usr/bin/nodejs
+      dest: /usr/bin/node
+      state: link
+    become: true
+
+  - name: Install NPM
+    apt: name=npm state=latest
+    become: true
+
+  - name: Install Grunt Node Module
+    command: npm install -g grunt
+    become: true
+
+  - name: Install RevealJS Node Packages
+    command: npm install
+    args:
+      chdir: /vagrant
